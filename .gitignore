@@ -1,0 +1,20 @@
+# Ignorar a pasta de Planilhas bases (suas planilhas físicas e templates)
+Planilhas bases/
+Planilhas bases
+
+# Ignorar banco de dados local ou arquivos temporários carregados pelo backend
+backend/data/
+data/
+temp_upload.xlsx
+*.xlsx
+
+# Ignorar pastas temporárias de cache do Python
+__pycache__/
+*.pyc
+
+# Ignorar logs gerados pelo sistema
+logs/
+*.log
+
+# Ignorar configurações do editor VS Code (opcional, mas recomendado)
+.vscode/

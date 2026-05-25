@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Central de Precificação de Fertilizantes — Automação Salesforce">
+    <title>Central de Precificação — Fertilizantes</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ═══ Header ═══ -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <div class="header-logo">🧪</div>
+                <div>
+                    <h1 class="header-title">Central de Precificação</h1>
+                    <p class="header-subtitle">Fluxo Unificado — Fertilizantes</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-outline" id="btn-auth" style="margin-right: 12px; height: 36px; padding: 0 16px;">
+                    🔐 Conectar ao Salesforce
+                </button>
+                <span class="badge badge-sandbox">QA Sandbox</span>
+                <span class="badge badge-disconnected" id="auth-badge">● Desconectado</span>
+            </div>
+        </header>
+
+        <!-- ═══ Stats Row ═══ -->
+        <div class="stats-row" id="stats-row" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total">—</div>
+                <div class="stat-label">Registros SF</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger" id="stat-deletados">—</div>
+                <div class="stat-label">Deletados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value success" id="stat-inseridos">—</div>
+                <div class="stat-label">Inseridos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning" id="stat-novos">—</div>
+                <div class="stat-label">Itens Novos</div>
+            </div>
+        </div>
+
+        <!-- ═══ Wizard Step Indicators ═══ -->
+        <div class="wizard-steps-container" id="wizard-steps-container" style="display:none;">
+            <div class="wizard-step active" id="step-ind-1">
+                <span class="step-number">1</span>
+                <span class="step-label">Upload da Planilha</span>
+            </div>
+            <div class="wizard-connector" id="step-conn-1"></div>
+            <div class="wizard-step" id="step-ind-2">
+                <span class="step-number">2</span>
+                <span class="step-label">Escolher Campanha</span>
+            </div>
+            <div class="wizard-connector" id="step-conn-2"></div>
+            <div class="wizard-step" id="step-ind-3">
+                <span class="step-number">3</span>
+                <span class="step-label">Configurar & Precificar</span>
+            </div>
+        </div>
+
+        <!-- ═══ WIZARD: PASSOS ═══ -->
+        <div class="wizard-panes">
+
+            <!-- ─── Passo 0: Escolha do Método (Tela Inicial) ─── -->
+            <div class="wizard-pane active" id="pane-step-0">
+                <div class="card" style="padding: 30px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Escolha o Segmento para Precificação</h2>
+                        <p style="color: var(--text-secondary); font-size: 14px; max-width: 600px; margin: 0 auto;">Selecione o método de precificação desejado para iniciar a análise dos produtos e a integração automatizada com o Salesforce.</p>
+                    </div>
+
+                    <div class="method-grid">
+                        <!-- Método 1: Solo Convencionais -->
+                        <div class="method-card active" id="btn-select-method-convencionais">
+                            <div class="method-badge success">Disponível</div>
+                            <div class="method-icon-wrapper blue">🌿</div>
+                            <h3 class="method-title">Fertilizantes de Solo - Convencionais</h3>
+                            <p class="method-desc">Lógica clássica com múltiplos motores ativos e uma filial associada a cada motor para cálculo específico.</p>
+                            <ul class="method-features">
+                                <li>📊 Upload de planilha Excel (.xlsx)</li>
+                                <li>🎯 Filtro inteligente e isolado por campanha</li>
+                                <li>⚡ Atualização em lote via Salesforce Bulk API 2.0</li>
+                            </ul>
+                            <button class="btn btn-primary method-btn">Iniciar Precificação ➡️</button>
+                        </div>
+
+                        <!-- Método 2: Especiais -->
+                        <div class="method-card disabled">
+                            <div class="method-badge">Em Breve</div>
+                            <div class="method-icon-wrapper purple">🔒</div>
+                            <h3 class="method-title">Fertilizantes Especiais</h3>
+                            <p class="method-desc">Regras de precificação para linhas de alta performance com aditivos especiais e formulações nobres.</p>
+                            <ul class="method-features">
+                                <li>🧮 Lógica de custos diferenciada</li>
+                                <li>🔍 Cruzamento com margens variáveis</li>
+                                <li>🛡️ Validação de alíquotas fiscais específicas</li>
+                            </ul>
+                            <button class="btn btn-outline method-btn" disabled>Bloqueado</button>
+                        </div>
+
+                        <!-- Método 3: Outros -->
+                        <div class="method-card disabled">
+                            <div class="method-badge">Em Breve</div>
+                            <div class="method-icon-wrapper amber">🔒</div>
+                            <h3 class="method-title">Foliares & Micronutrientes</h3>
+                            <p class="method-desc">Lógica de precificação por volume e dosagem para foliares e nutrientes específicos de alta absorção.</p>
+                            <ul class="method-features">
+                                <li>📦 Controle de embalagens e paletização</li>
+                                <li>📉 Descontos progressivos por escala</li>
+                                <li>📋 Regras de campanhas sazonais</li>
+                            </ul>
+                            <button class="btn btn-outline method-btn" disabled>Bloqueado</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Passo 1: Upload ─── -->
+            <div class="wizard-pane" id="pane-step-1" style="display:none;">
+                <div class="card">
+                    <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><span class="icon">📤</span> Passo 1: Enviar Planilha de Precificação</span>
+                        <a href="/api/template/download" class="btn-tiny" target="_blank" download>⬇️ Baixar Template</a>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: center; margin-top: 10px;">
+                        <div class="upload-area" id="upload-area" style="height: 140px;">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-text" style="font-size:14px; font-weight:600;">Arraste a planilha ou clique para selecionar</div>
+                            <input type="file" id="file-upload" accept=".xlsx" style="display: none;">
+                        </div>
+                        <div>
+                            <div id="upload-status" class="upload-status" style="margin-bottom:8px; font-weight:600;">Nenhum arquivo selecionado</div>
+                            <textarea class="codes-input" id="codes-input"
+                                      placeholder="Os códigos de produtos serão exibidos aqui após a leitura..."
+                                      rows="3" readonly style="font-size:11px;"></textarea>
+                            <div class="motor-actions" style="margin-top: 4px;">
+                                <span class="motor-actions-left" id="codes-counter" style="font-weight:600; color:var(--accent-blue);">0 códigos extraídos</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <button class="btn btn-outline" id="btn-prev-to-step-0" style="padding: 0 25px; height:40px; font-weight:600; flex:none;">
+                            ⬅️ Voltar para Início
+                        </button>
+                        <button class="btn btn-success" id="btn-goto-step-2" disabled style="padding: 0 30px; height:40px; font-size:13px; font-weight:600; flex:none; display:inline-flex; align-items:center; justify-content:center;">
+                            Avançar para Escolher Campanha ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Passo 2: Escolha de Campanha (Novo) ─── -->
+            <div class="wizard-pane" id="pane-step-2" style="display:none;">
+                <div class="card">
+                    <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <span><span class="icon">🎯</span> Passo 2: Selecione a Campanha Alvo</span>
+                        <!-- Filtros em formato de pílula no canto direito -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <!-- Dropdown de Motores Ativos (Pílula) -->
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none;">⚡</span>
+                                <select class="search-input" id="filter-campaign-status" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; font-weight: 600; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; outline: none; width: 140px;">
+                                    <option value="ativos" selected>🟢 Ativas</option>
+                                    <option value="todos">⚪ Todas</option>
+                                    <option value="inativos">🔴 Inativas</option>
+                                </select>
+                            </div>
+                            <!-- Filtro de Busca Digitável (Pílula) -->
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none; color: var(--text-secondary);">🔍</span>
+                                <input type="text" class="search-input" id="filter-campaign-search" placeholder="Buscar campanha..." autocomplete="off" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); outline: none; width: 180px;">
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 6px; margin-bottom: 16px;">
+                        Identificamos as seguintes campanhas associadas aos motores do Salesforce. Selecione qual delas deseja precificar hoje:
+                    </p>
+                    <div class="campaign-grid" id="campaign-cards-grid">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <button class="btn btn-outline" id="btn-prev-to-step-1-from-step-2" style="padding:0 25px; height:40px; font-weight:600; flex:none;">
+                            ⬅️ Voltar para Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Passo 3: Configurar & Precificar (Unificado) ─── -->
+            <div class="wizard-pane" id="pane-step-3" style="display:none;">
+                <div class="card">
+                    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span><span class="icon">⚙️</span> Passo 3: Definir Filtros & Calcular Desconto</span>
+                        <span class="motor-actions-left" id="motor-counter" style="font-weight:bold; color:var(--accent-green);">0 motores selecionados</span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top: 12px; margin-bottom: 16px;">
+                        <!-- Busca por Campanha (Searchable Dropdown) -->
+                        <div class="search-container">
+                            <label style="display:block; font-size:11px; color:var(--text-secondary); font-weight:bold; margin-bottom:6px; text-transform:uppercase;">🎯 Filtrar por Campanha:</label>
+                            <div class="custom-dropdown" id="campaign-dropdown">
+                                <span class="search-icon" style="top:18px;">🎯</span>
+                                <input type="text" class="search-input" id="campaign-search-input" placeholder="Clique para ver ou digite a campanha..." autocomplete="off">
+                                <div class="dropdown-list" id="campaign-dropdown-list" style="display:none;">
+                                    <!-- Populado via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Busca por Filial (Searchable Dropdown) -->
+                        <div class="search-container">
+                            <label style="display:block; font-size:11px; color:var(--text-secondary); font-weight:bold; margin-bottom:6px; text-transform:uppercase;">🏢 Filtrar por Filial:</label>
+                            <div class="custom-dropdown" id="filial-dropdown">
+                                <span class="search-icon" style="top:18px;">🏢</span>
+                                <input type="text" class="search-input" id="filial-search-input" placeholder="Clique para ver ou digite a filial (L04, Alfenas)..." autocomplete="off">
+                                <div class="dropdown-list" id="filial-dropdown-list" style="display:none;">
+                                    <!-- Populado via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha de Controles Rápidos -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); margin-bottom:12px;">
+                        <label class="alert-checkbox" style="margin:0; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="filter-only-active" checked>
+                            <span style="font-weight:600; color:var(--text-primary);">🟢 Apenas Motores Ativos</span>
+                        </label>
+                        <span style="font-size:11px; color:var(--text-muted);">Desmarque para visualizar todos os motores (ativos e inativos)</span>
+                    </div>
+
+                    <!-- Painel de Motores Mapeados (Sempre Aberto) -->
+                    <div id="motors-selection-container" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:16px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                            <span style="font-size:11px; font-weight:bold; color:var(--text-secondary); text-transform:uppercase;">⚙️ Escolha os Motores para Precificar:</span>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <!-- Filtro de Busca Digitável para Motores -->
+                                <div style="position: relative; display: flex; align-items: center; width: 220px;">
+                                    <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none; color: var(--text-secondary);">🔍</span>
+                                    <input type="text" class="search-input" id="motor-search-input" placeholder="Filtrar motores por nome..." autocomplete="off" style="padding: 0 10px 0 26px; height: 28px; font-size: 11px; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); outline: none; width: 100%;">
+                                </div>
+                                <button class="btn-tiny" id="btn-select-all-motors">Selecionar Todos</button>
+                                <button class="btn-tiny" id="btn-deselect-all-motors">Limpar Seleção</button>
+                            </div>
+                        </div>
+                        <div class="motor-list" id="motor-list" style="max-height: 250px;">
+                            <!-- Preenchido via Javascript -->
+                        </div>
+                    </div>
+
+                    <!-- Alerta de Novos Itens -->
+                    <div class="new-items-alert" id="new-items-alert" style="display:none; margin-top:8px;">
+                        <div class="alert-header">⚠️ Itens não encontrados nos motores:</div>
+                        <div class="alert-codes" id="new-items-codes"></div>
+                        <label class="alert-checkbox">
+                            <input type="checkbox" id="include-new-items" checked>
+                            <span style="font-weight:bold;">Inserir esses itens mesmo assim nos motores selecionados</span>
+                        </label>
+                    </div>
+
+                    <!-- Botões de Navegação -->
+                    <div style="display:flex; justify-content:space-between; margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <button class="btn btn-outline" id="btn-prev-to-step-2" style="padding:0 25px; height:40px; font-weight:600; flex:none;">
+                            ⬅️ Voltar para Campanhas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ═══ Dashboard de Precificação (Embutido no Passo 2) ═══ -->
+                <div class="card" id="panel-dashboard" style="margin-top: 16px;">
+                    <!-- Cabeçalho do Dashboard com ações -->
+                    <div class="dashboard-header">
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span class="icon">📊</span>
+                                <span class="dashboard-title">Dashboard de Precificação</span>
+                                <span class="preview-count" id="preview-count"></span>
+                            </div>
+                            <!-- Filtro de Filial no Cabeçalho (Custom Searchable Dropdown) -->
+                            <div class="custom-dropdown" id="header-filial-dropdown" style="display:none; min-width: 220px; position: relative;">
+                                <span class="search-icon" style="top:10px; font-size:12px; left:10px;">🏢</span>
+                                <input type="text" class="search-input" id="header-filial-search-input" placeholder="Buscar filial..." autocomplete="off" style="padding: 0 10px 0 28px; height: 32px; font-size: 11px; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; font-weight: 600; outline: none; width: 100%;">
+                                <div class="dropdown-list" id="header-filial-dropdown-list" style="display:none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100; max-height: 200px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                                    <!-- Populado via JS -->
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="action-info" id="action-info">Selecione motores e clique em Calcular Desconto.</div>
+                            <button class="btn btn-outline" id="btn-calc-desconto" disabled style="height:36px; padding:0 20px; white-space:nowrap; font-weight:600;">
+                                🧮 Calcular Desconto
+                            </button>
+                            <button class="btn btn-success" id="btn-execute-pricing" disabled style="height:36px; padding:0 20px; white-space:nowrap; font-weight:600;">
+                                ⚡ Executar Precificação
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtros do Dashboard -->
+                    <div class="preview-filters" id="preview-filters" style="display:none; margin-bottom: 12px;">
+                        <input type="text" class="filter-input" id="filter-filial" placeholder="🔍 Filtrar por Filial...">
+                        <input type="text" class="filter-input" id="filter-motor" placeholder="🔍 Filtrar por Motor...">
+                        <input type="text" class="filter-input" id="filter-codigo" placeholder="🔍 Filtrar por Código...">
+                    </div>
+
+                    <!-- Mapeamento de Filiais -->
+                    <div id="mapping-summary-container" style="display:none; margin-bottom: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: rgba(255,255,255,0.01); padding: 16px;">
+                        <h4 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                            <span>🏢 Mapeamento Motor ↔ Filial (Planilha)</span>
+                        </h4>
+                        <div class="table-container" style="margin: 0; padding: 0; box-shadow: none; background: transparent; border: none;">
+                            <table class="preview-table" id="mapping-table" style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <th style="text-align: left; padding: 6px 10px; color: var(--text-secondary); font-weight: 600;">Motor (Salesforce)</th>
+                                        <th style="text-align: left; padding: 6px 10px; color: var(--text-secondary); font-weight: 600;">Filiais (Salesforce)</th>
+                                        <th style="text-align: left; padding: 6px 10px; color: var(--text-secondary); font-weight: 600;">Filial Mapeada (Planilha)</th>
+                                        <th style="text-align: right; padding: 6px 10px; color: var(--text-secondary); font-weight: 600;">Custo 1º Prod.</th>
+                                        <th style="text-align: center; padding: 6px 10px; width: 100px; color: var(--text-secondary); font-weight: 600;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mapping-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Resumo -->
+                    <div id="preview-summary" class="preview-summary" style="display:none;"></div>
+
+                    <!-- Tabela -->
+                    <div class="table-container" id="preview-table-container">
+                        <div class="empty-state" id="dashboard-empty-state">
+                            <span class="icon">📊</span>
+                            <span>Defina os filtros de Campanha/Filial e clique em <strong>Calcular Desconto</strong> para visualizar.</span>
+                        </div>
+                        <table class="preview-table" id="preview-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Filial</th>
+                                    <th>Motor</th>
+                                    <th>Campanha</th>
+                                    <th>UF</th>
+                                    <th>Custo</th>
+                                    <th>Margem</th>
+                                    <th>Preço Partida</th>
+                                    <th>Preço ERP</th>
+                                    <th>Desconto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══ Logs ═══ -->
+        <div class="card log-panel">
+            <div class="card-title">
+                <span class="icon">📋</span> Log em Tempo Real
+            </div>
+            <div class="log-container" id="log-container">
+                <div class="log-empty">
+                    Aguardando operação...<br>
+                    Os logs aparecerão aqui em tempo real.
+                </div>
+            </div>
+            <div class="progress-section" id="progress-section" style="display:none;">
+                <div class="progress-header">
+                    <span class="progress-label" id="progress-label">Progresso</span>
+                    <span class="progress-value" id="progress-value">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/js/websocket.js"></script>
+    <script src="/static/js/ui.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
