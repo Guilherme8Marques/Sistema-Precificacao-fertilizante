@@ -168,7 +168,7 @@
                             <!-- Dropdown de Motores Ativos (Pílula) -->
                             <div style="position: relative; display: flex; align-items: center;">
                                 <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none;">⚡</span>
-                                <select class="search-input" id="filter-campaign-status" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; font-weight: 600; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; outline: none; width: 140px;">
+                                <select class="search-input" id="filter-campaign-status" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; font-weight: 600; border-radius: 100px; cursor: pointer; outline: none; width: 140px;">
                                     <option value="ativos" selected>🟢 Ativas</option>
                                     <option value="todos">⚪ Todas</option>
                                     <option value="inativos">🔴 Inativas</option>
@@ -177,7 +177,7 @@
                             <!-- Filtro de Busca Digitável (Pílula) -->
                             <div style="position: relative; display: flex; align-items: center;">
                                 <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none; color: var(--text-secondary);">🔍</span>
-                                <input type="text" class="search-input" id="filter-campaign-search" placeholder="Buscar campanha..." autocomplete="off" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); outline: none; width: 180px;">
+                                <input type="text" class="search-input" id="filter-campaign-search" placeholder="Buscar campanha..." autocomplete="off" style="padding: 0 12px 0 26px; height: 32px; font-size: 11px; border-radius: 100px; outline: none; width: 180px;">
                             </div>
                         </div>
                     </div>
@@ -230,7 +230,7 @@
                     </div>
 
                     <!-- Linha de Controles Rápidos -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.35); padding:10px 14px; border-radius:var(--radius-pill); border:1px solid var(--border); margin-bottom:12px;">
                         <label class="alert-checkbox" style="margin:0; cursor:pointer; display:flex; align-items:center; gap:8px;">
                             <input type="checkbox" id="filter-only-active" checked>
                             <span style="font-weight:600; color:var(--text-primary);">🟢 Apenas Motores Ativos</span>
@@ -239,20 +239,20 @@
                     </div>
 
                     <!-- Painel de Motores Mapeados (Sempre Aberto) -->
-                    <div id="motors-selection-container" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:16px; margin-bottom:16px;">
+                    <div id="motors-selection-container" style="border-top:1px dashed var(--border); padding-top:16px; margin-bottom:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                             <span style="font-size:11px; font-weight:bold; color:var(--text-secondary); text-transform:uppercase;">⚙️ Escolha os Motores para Precificar:</span>
                             <div style="display:flex; align-items:center; gap:8px;">
                                 <!-- Filtro de Busca Digitável para Motores -->
                                 <div style="position: relative; display: flex; align-items: center; width: 220px;">
                                     <span style="position: absolute; left: 10px; font-size: 11px; pointer-events: none; color: var(--text-secondary);">🔍</span>
-                                    <input type="text" class="search-input" id="motor-search-input" placeholder="Filtrar motores por nome..." autocomplete="off" style="padding: 0 10px 0 26px; height: 28px; font-size: 11px; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary); outline: none; width: 100%;">
+                                    <input type="text" class="search-input" id="motor-search-input" placeholder="Filtrar motores por nome..." autocomplete="off" style="padding: 0 10px 0 26px; height: 28px; font-size: 11px;">
                                 </div>
                                 <button class="btn-tiny" id="btn-select-all-motors">Selecionar Todos</button>
                                 <button class="btn-tiny" id="btn-deselect-all-motors">Limpar Seleção</button>
                             </div>
                         </div>
-                        <div class="motor-list" id="motor-list" style="max-height: 250px;">
+                        <div class="motor-list" id="motor-list" style="max-height: 280px;">
                             <!-- Preenchido via Javascript -->
                         </div>
                     </div>
@@ -268,14 +268,14 @@
                     </div>
 
                     <!-- Botões de Navegação -->
-                    <div style="display:flex; justify-content:space-between; margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; justify-content:space-between; margin-top:15px; padding-top:15px; border-top:1px solid var(--border);">
                         <button class="btn btn-outline" id="btn-prev-to-step-2" style="padding:0 25px; height:40px; font-weight:600; flex:none;">
                             ⬅️ Voltar para Campanhas
                         </button>
                     </div>
                 </div>
 
-                <!-- ═══ Dashboard de Precificação (Embutido no Passo 2) ═══ -->
+                <!-- ═══ Dashboard de Precificação (Embutido no Passo 3) ═══ -->
                 <div class="card" id="panel-dashboard" style="margin-top: 16px;">
                     <!-- Cabeçalho do Dashboard com ações -->
                     <div class="dashboard-header">
@@ -288,8 +288,8 @@
                             <!-- Filtro de Filial no Cabeçalho (Custom Searchable Dropdown) -->
                             <div class="custom-dropdown" id="header-filial-dropdown" style="display:none; min-width: 220px; position: relative;">
                                 <span class="search-icon" style="top:10px; font-size:12px; left:10px;">🏢</span>
-                                <input type="text" class="search-input" id="header-filial-search-input" placeholder="Buscar filial..." autocomplete="off" style="padding: 0 10px 0 28px; height: 32px; font-size: 11px; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; font-weight: 600; outline: none; width: 100%;">
-                                <div class="dropdown-list" id="header-filial-dropdown-list" style="display:none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100; max-height: 200px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                                <input type="text" class="search-input" id="header-filial-search-input" placeholder="Buscar filial..." autocomplete="off" style="padding: 0 10px 0 28px; height: 32px; font-size: 11px; font-weight: 600; outline: none; width: 100%;">
+                                <div class="dropdown-list" id="header-filial-dropdown-list" style="display:none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 4px;">
                                     <!-- Populado via JS -->
                                 </div>
                             </div>
@@ -313,7 +313,7 @@
                     </div>
 
                     <!-- Mapeamento de Filiais -->
-                    <div id="mapping-summary-container" style="display:none; margin-bottom: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: rgba(255,255,255,0.01); padding: 16px;">
+                    <div id="mapping-summary-container" style="display:none; margin-bottom: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-input); padding: 16px;">
                         <h4 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                             <span>🏢 Mapeamento Motor ↔ Filial (Planilha)</span>
                         </h4>

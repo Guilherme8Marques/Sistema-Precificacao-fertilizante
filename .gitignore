@@ -18,3 +18,7 @@ logs/
 
 # Ignorar configurações do editor VS Code (opcional, mas recomendado)
 .vscode/
+
+# Ignorar pasta de referências visuais externas
+Visual/
+temp_lovable_repo/

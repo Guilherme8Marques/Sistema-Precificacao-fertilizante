@@ -326,9 +326,9 @@ async def listar_backups():
 # ── API: Download Template ─────────────────────────────
 @app.get("/api/template/download")
 async def download_template():
-    """Retorna a planilha template."""
+    """Retorna a planilha template real (Planilhas bases/Template.xlsx)."""
     try:
-        template_path = settings.PLANILHAS_DIR / "tamplate.xlsx"
+        template_path = settings.PLANILHAS_DIR / "Template.xlsx"
         if template_path.exists():
             return FileResponse(
                 path=template_path,
